@@ -9,13 +9,25 @@ services:
       - '5672:5672'
       # HTTP management UI
       - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: whiterabbit
+      RABBITMQ_DEFAULT_PASS: beyondthemirror
     networks:
       - network
 
-  proxy:
+  qserve:
     build: .
+    ports:
+      - '8080:80'
+      - '8443:443'
     environment:
-      AMQP_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
+      RABBITMQ_USER: whiterabbit
+      RABBITMQ_PASS: beyondthemirror
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 15672
+      RABBITMQ_EXCHANGE: exchange
+      RABBITMQ_QUEUE: exchange.q1
+      RABBITMQ_ROUTING_KEY: exchange.q1
     networks:
       - network
 

@@ -1,14 +1,13 @@
-FROM python:3.9-alpine
+FROM tiangolo/uwsgi-nginx-flask:python3.8
 
+WORKDIR /app
 COPY Makefile .
 COPY requirements.txt .
-
 RUN make install
 
-ENV PYTHONUNBUFFERED=1
+COPY wait-for-it.sh .
+COPY init-rabbitmq.sh .
+COPY ./app .
 
-WORKDIR /usr/src/app
 
-COPY loops .
-
-CMD ["python3", "/usr/src/app/test.py"]
+CMD ./init-rabbitmq.sh && /start.sh
