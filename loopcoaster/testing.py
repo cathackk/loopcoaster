@@ -4,7 +4,7 @@ import time
 
 # for testing, to be later removed or moved to tests
 
-class Motor:
+class DummyMotor:
     def __init__(self, port: str):
         self.port = port
 

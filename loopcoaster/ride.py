@@ -3,10 +3,11 @@
 import os.path
 import time
 
-from buildhat import Motor
+import buildhat
 import click
 import pygame
 
+import testing
 
 LOOP_WAV = 'roller-loop.mp3'
 SCREAMS_WAV = 'roller-screams.mp3'
@@ -21,8 +22,9 @@ SCREAMS_WAV = 'roller-screams.mp3'
 @click.option('--kick-rotations', '-r2', type=float, default=10.0, help='Length of the 2nd stage "kick"')
 @click.option('--return-speed', '-v3', type=float, default=80.0, help='Speed for the 3rd stage "return"')
 @click.option('--return-rotations', '-r3', type=float, default=25.5, help='Length of the 3rd stage "return"')
-@click.option('--sound/--no-sound', type=bool, default=True, help='Play some nice sounds')
+@click.option('--sound/--silent', type=bool, default=True, help='Play some nice sounds')
 @click.option('--port', '-p', type=click.Choice('ABCD'), default='A', help='Which buildhat port controls the motor')
+@click.option('--dummy/--real', type=bool, default=False, help='Use dummy motor class instead of controlling a real motor')
 def ride(
     repeats: int,
     wait_seconds: float,
@@ -34,9 +36,12 @@ def ride(
     return_rotations: float,
     sound: bool,
     port: str,
+    dummy: bool,
 ):
-    # buildhat motor controlling the elevator
-    motor = Motor(port)
+    motor_cls = buildhat.Motor if not dummy else testing.DummyMotor
+
+    # motor controlling the elevator
+    motor = motor_cls(port)
     motor.plimit(1.0)
 
     for repeat in range(repeats):
@@ -47,23 +52,27 @@ def ride(
         # stage 1: raise
         # - the cart is in the elevator
         # - the elevator is just about to be lifted
-        if sound:
-            play_sound(LOOP_WAV, looped=True)
-        motor.run_for_rotations(rotations=raise_rotations, speed=raise_speed)
+        if raise_rotations > 0:
+            if sound:
+                play_sound(LOOP_WAV, looped=True)
+            motor.run_for_rotations(rotations=raise_rotations, speed=raise_speed)
 
         # stage 2: kick
         # - the elevator is just before the summit
         # - make a fast strong "kick" to push the cart onto the rails
-        if sound:
-            play_sound(SCREAMS_WAV)
-        motor.run_for_rotations(rotations=kick_rotations, speed=kick_speed)
+        if kick_rotations > 0:
+            if sound:
+                play_sound(SCREAMS_WAV)
+            motor.run_for_rotations(rotations=kick_rotations, speed=kick_speed)
 
         # stage 3: return
         # - the cart is on the way down
         # - the elevator is returning to its base position
-        motor.run_for_rotations(rotations=return_rotations, speed=return_speed)
+        if return_rotations > 0:
+            motor.run_for_rotations(rotations=return_rotations, speed=return_speed)
 
     motor.stop()
+
 
 def play_sound(filename: str, looped: bool = False) -> None:
     if not pygame.mixer.get_init():
@@ -76,7 +85,6 @@ def play_sound(filename: str, looped: bool = False) -> None:
 def resource_path(filename: str) -> str:
     loopcoaster_dir = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(loopcoaster_dir, 'resources', filename)
-
 
 
 if __name__ == '__main__':
