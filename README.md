@@ -1,2 +1,2 @@
 # loopcoaster
-Controlling LEGO 10303 with buildhat
+CLI tool for controlling LEGO 10303 with Raspberry+buildhat
