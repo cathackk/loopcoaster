@@ -12,31 +12,45 @@ import testing
 LOOP_WAV = 'roller-loop.mp3'
 SCREAMS_WAV = 'roller-screams.mp3'
 
+DEFAULT_REPEATS = 1
+DEFAULT_WAIT_SECONDS = 0.0
+DEFAULT_RAISE_SPEED = 10.0
+DEFAULT_RAISE_ROTS = 28.0
+DEFAULT_KICK_SPEED = 100.0
+DEFAULT_KICK_ROTS = 10.0
+DEFAULT_RETURN_SPEED = 80.0
+DEFAULT_RETURN_ROTS = 25.5
+DEFAULT_SOUND = True
+DEFAULT_PORT = 'A'
 
 @click.command()
-@click.option('--repeats', '-n', type=int, default=1, help='Number of consecutive rides')
-@click.option('--wait-seconds', '-w', type=float, default=0.0, help='Wait time between consecutive rides')
-@click.option('--raise-speed', '-v1', type=float, default=10.0, help='Speed for the 1st stage "raise"')
-@click.option('--raise-rotations', '-r1', type=float, default=28.0, help='Length of the 1st stage "raise"')
-@click.option('--kick-speed', '-v2', type=float, default=100.0, help='Speed for the 2nd stage "kick"')
-@click.option('--kick-rotations', '-r2', type=float, default=10.0, help='Length of the 2nd stage "kick"')
-@click.option('--return-speed', '-v3', type=float, default=80.0, help='Speed for the 3rd stage "return"')
-@click.option('--return-rotations', '-r3', type=float, default=25.5, help='Length of the 3rd stage "return"')
-@click.option('--sound/--silent', type=bool, default=True, help='Play some nice sounds')
-@click.option('--port', '-p', type=click.Choice('ABCD'), default='A', help='Which buildhat port controls the motor')
+@click.option('--repeats', '-n', type=int, default=DEFAULT_REPEATS, help='Number of consecutive rides')
+@click.option('--wait-seconds', '-w', type=float, default=DEFAULT_WAIT_SECONDS, help='Wait time between consecutive rides')
+@click.option('--raise-speed', '-v1', type=float, default=DEFAULT_RAISE_SPEED, help='Speed for the 1st stage "raise"')
+@click.option('--raise-rotations', '-r1', type=float, default=DEFAULT_RAISE_ROTS, help='Length of the 1st stage "raise"')
+@click.option('--kick-speed', '-v2', type=float, default=DEFAULT_KICK_SPEED, help='Speed for the 2nd stage "kick"')
+@click.option('--kick-rotations', '-r2', type=float, default=DEFAULT_KICK_ROTS, help='Length of the 2nd stage "kick"')
+@click.option('--return-speed', '-v3', type=float, default=DEFAULT_RETURN_SPEED, help='Speed for the 3rd stage "return"')
+@click.option('--return-rotations', '-r3', type=float, default=DEFAULT_RETURN_ROTS, help='Length of the 3rd stage "return"')
+@click.option('--sound/--silent', type=bool, default=DEFAULT_SOUND, help='Play some nice sounds')
+@click.option('--port', '-p', type=click.Choice('ABCD'), default=DEFAULT_PORT, help='Which buildhat port controls the motor')
 @click.option('--dummy/--real', type=bool, default=False, help='Use dummy motor class instead of controlling a real motor')
+def _ride(*args, **kwargs):
+    ride(*args, **kwargs)
+
+
 def ride(
-    repeats: int,
-    wait_seconds: float,
-    raise_speed: float,
-    raise_rotations: float,
-    kick_speed: float,
-    kick_rotations: float,
-    return_speed: float,
-    return_rotations: float,
-    sound: bool,
-    port: str,
-    dummy: bool,
+    repeats: int = DEFAULT_REPEATS,
+    wait_seconds: float = DEFAULT_WAIT_SECONDS,
+    raise_speed: float = DEFAULT_RAISE_SPEED,
+    raise_rotations: float = DEFAULT_RAISE_ROTS,
+    kick_speed: float = DEFAULT_KICK_SPEED,
+    kick_rotations: float = DEFAULT_KICK_ROTS,
+    return_speed: float = DEFAULT_RETURN_SPEED,
+    return_rotations: float = DEFAULT_RETURN_ROTS,
+    sound: bool = DEFAULT_SOUND,
+    port: str = DEFAULT_PORT,
+    dummy: bool = False,
 ):
     motor_cls = buildhat.Motor if not dummy else testing.DummyMotor
 
@@ -88,4 +102,4 @@ def resource_path(filename: str) -> str:
 
 
 if __name__ == '__main__':
-    ride()
+    _ride()
