@@ -17,6 +17,8 @@ from ride import ride
 @click.option('--wait-seconds', '-t', type=float, default=5.0)
 @click.option('--buffer-size', '-b', type=int, default=1)
 def listen(receive_url: str, user: str, password: str, wait_seconds: float, buffer_size: int):
+    waiting_since = datetime.now()
+
     while True:
         now = datetime.now()
 
@@ -31,23 +33,31 @@ def listen(receive_url: str, user: str, password: str, wait_seconds: float, buff
         received = response_json['received']
         remaining = response_json['remaining']
 
-        print(f'{now:%Y-%m-%dT%H:%M:%S}: received {len(received)} messages, still remaining {remaining}')
+        if received:
+            print(
+                f'\n{now:%Y-%m-%dT%H:%M:%S}: '
+                f'received {len(received)} messages after {now - waiting_since}, '
+                f'still remaining {remaining}'
+            )
 
-        for index, obj in enumerate(received, 1):
-            message = obj['message']
-            sender = obj['sender']
-            ts = datetime.fromtimestamp(obj['ts'])
-            print(f'- [{index}/{len(received)}] {sender}@{ts:%Y-%m-%dT%H:%M:%S}: {message}')
+            for index, obj in enumerate(received, 1):
+                message = obj['message']
+                sender = obj['sender']
+                ts = datetime.fromtimestamp(obj['ts'])
+                print(f'- [{index}/{len(received)}] {sender}@{ts:%Y-%m-%dT%H:%M:%S}: {message}')
 
-            command = message.pop('command')
-            if command == 'move':
-                move(**message)
-            elif command == 'ride':
-                ride(**message)
-            else:
-                print(f'unknown command {command!r}')
+                command = message.pop('command')
+                if command == 'move':
+                    move(**message)
+                elif command == 'ride':
+                    ride(**message)
+                else:
+                    print(f'unknown command {command!r}')
 
-        if not remaining:
+            waiting_since = datetime.now()
+
+        else:
+            print('.', end='', flush=True)
             time.sleep(wait_seconds)
 
 
