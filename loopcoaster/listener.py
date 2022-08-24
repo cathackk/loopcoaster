@@ -11,7 +11,7 @@ from ride import ride
 
 
 @click.command()
-@click.argument('receive_url', type=str, required=True)
+@click.argument('receive_url', type=str, required=True, envvar='LOOPCOASTER_RECEIVE_URL')
 @click.option('--user', '-u', type=str)
 @click.option('--password', '-p', type=str)
 @click.option('--wait-seconds', '-t', type=float, default=5.0)
@@ -76,4 +76,4 @@ def log(*args, **kwargs):
 
 
 if __name__ == '__main__':
-    listen()
+    listen(auto_envvar_prefix='LOOPCOASTER')
