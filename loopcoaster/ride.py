@@ -18,7 +18,7 @@ SCREAMS_WAV = 'roller-screams.mp3'
 # original chain length was 255 -> requires 63.75 rotations
 # if the chain gets shorter, the number of required rotations must be changed accordingly
 DEFAULT_CHAIN_LENGTH = 255
-CHAIN_PIECES_REMOVED = 2
+CHAIN_PIECES_REMOVED = 4
 CHAIN_LENGTH = DEFAULT_CHAIN_LENGTH - CHAIN_PIECES_REMOVED
 FULL_CYCLE_ROTS = CHAIN_LENGTH * 0.25
 
