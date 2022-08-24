@@ -50,7 +50,6 @@ def listen(receive_url: str, user: str, password: str, wait_seconds: float, buff
                 ts = datetime.fromtimestamp(obj['ts'])
                 log(f'- [{index}/{len(received)}] {sender}@{ts:%Y-%m-%dT%H:%M:%S}: {message}')
 
-                log(pyfiglet.figlet_format("blame", font="doh", width=100))
                 log(pyfiglet.figlet_format(sender, font="doh", width=100))
 
                 command = message.pop('command')
