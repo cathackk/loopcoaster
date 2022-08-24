@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import sys
 from datetime import datetime
 
 import click
@@ -28,13 +28,16 @@ def listen(receive_url: str, user: str, password: str, wait_seconds: float, buff
             headers={'Content-Type': 'application/json'},
             json={'count': buffer_size},
         )
+        if not response.ok:
+            log(f'failed to fetch from {receive_url}, check your credentials')
+            sys.exit(1)
 
         response_json = response.json()
         received = response_json['received']
         remaining = response_json['remaining']
 
         if received:
-            print(
+            log(
                 f'\n{now:%Y-%m-%dT%H:%M:%S}: '
                 f'received {len(received)} messages after {now - waiting_since}, '
                 f'still remaining {remaining}'
@@ -44,21 +47,32 @@ def listen(receive_url: str, user: str, password: str, wait_seconds: float, buff
                 message = obj['message']
                 sender = obj['sender']
                 ts = datetime.fromtimestamp(obj['ts'])
-                print(f'- [{index}/{len(received)}] {sender}@{ts:%Y-%m-%dT%H:%M:%S}: {message}')
+                log(f'- [{index}/{len(received)}] {sender}@{ts:%Y-%m-%dT%H:%M:%S}: {message}')
 
                 command = message.pop('command')
-                if command == 'move':
-                    move(**message)
-                elif command == 'ride':
-                    ride(**message)
-                else:
-                    print(f'unknown command {command!r}')
+
+                try:
+                    if command == 'move':
+                        move(**message)
+                    elif command == 'ride':
+                        ride(**message)
+                    else:
+                        log(f'unknown command {command!r}')
+
+                except TypeError:
+                    kwargs_str = ', '.join(f'{key}={value!r}' for key, value in message.items())
+                    log(f'failed to execute {command}({kwargs_str})')
 
             waiting_since = datetime.now()
 
         else:
-            print('.', end='', flush=True)
+            log('.', end='', flush=True)
             time.sleep(wait_seconds)
+
+
+# TODO: proper logging with logger
+def log(*args, **kwargs):
+    print(*args, **kwargs, file=sys.stderr)
 
 
 if __name__ == '__main__':
