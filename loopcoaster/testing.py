@@ -12,10 +12,10 @@ class DummyMotor:
         return f'{type(self).__name__}({self.port!r})'
 
     def plimit(self, plimit: float) -> None:
-        self._log(f"setting {plimit=}")
+        self._log(f"setting plimit={plimit}")
 
     def run_for_rotations(self, rotations: float, speed: float) -> None:
-        self._log(f"running {rotations=}, {speed=}")
+        self._log(f"running rotations={rotations}, speed={speed}")
         time.sleep(rotations / speed * 10)
 
     def stop(self) -> None:
@@ -23,5 +23,3 @@ class DummyMotor:
 
     def _log(self, obj):
         print(f">>> {self}: {obj}", file=sys.stderr)
-
-
