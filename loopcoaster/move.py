@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import buildhat
 import click
 
-import testing
+from motor import get_motor
 
 
 DEFAULT_SPEED = 100.0
@@ -27,8 +26,7 @@ def move(
     port: str = DEFAULT_PORT,
     dummy: bool = False
 ):
-    motor_cls = buildhat.Motor if not dummy else testing.DummyMotor
-    motor = motor_cls(port)
+    motor = get_motor(port, dummy)
     motor.plimit(plimit)
     motor.run_for_rotations(rotations=rotations, speed=speed)
     motor.stop()

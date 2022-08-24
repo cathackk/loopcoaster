@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+
 import os.path
 import time
 
-import buildhat
 import click
 import pygame
 
-import testing
+from motor import get_motor
+
 
 LOOP_WAV = 'roller-loop.mp3'
 SCREAMS_WAV = 'roller-screams.mp3'
@@ -52,10 +55,8 @@ def ride(
     port: str = DEFAULT_PORT,
     dummy: bool = False,
 ):
-    motor_cls = buildhat.Motor if not dummy else testing.DummyMotor
-
     # motor controlling the elevator
-    motor = motor_cls(port)
+    motor = get_motor(port, dummy)
     motor.plimit(1.0)
 
     for repeat in range(repeats):
