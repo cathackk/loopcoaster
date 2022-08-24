@@ -12,9 +12,6 @@ import pygame
 from motor import get_motor
 
 
-LOOP_WAV = 'roller-loop.mp3'
-SCREAMS_WAV = 'roller-screams.mp3'
-
 # original chain length was 255 -> requires 63.75 rotations
 # if the chain gets shorter, the number of required rotations must be changed accordingly
 DEFAULT_CHAIN_LENGTH = 255
@@ -32,8 +29,12 @@ DEFAULT_RETURN_SPEED = 80.0
 
 DEFAULT_REPEATS = 1
 DEFAULT_WAIT_SECONDS = 0.0
-DEFAULT_SOUND = True
+
 DEFAULT_PORT = 'A'
+
+LOOP_WAV = 'roller-loop.mp3'
+SCREAMS_WAV = 'roller-screams.mp3'
+DEFAULT_SOUND_ON = False
 
 
 @click.command()
@@ -45,7 +46,7 @@ DEFAULT_PORT = 'A'
 @click.option('--kick-rotations', '-r2', type=float, default=DEFAULT_KICK_ROTS, help='Length of the 2nd stage "kick"')
 @click.option('--return-speed', '-v3', type=float, default=DEFAULT_RETURN_SPEED, help='Speed for the 3rd stage "return"')
 @click.option('--return-rotations', '-r3', type=float, default=DEFAULT_RETURN_ROTS, help='Length of the 3rd stage "return"')
-@click.option('--sound/--silent', type=bool, default=DEFAULT_SOUND, help='Play some nice sounds')
+@click.option('--sound/--silent', type=bool, default=DEFAULT_SOUND_ON, help='Play some nice sounds')
 @click.option('--port', '-p', type=click.Choice('ABCD'), default=DEFAULT_PORT, help='Which buildhat port controls the motor')
 @click.option('--dummy/--real', type=bool, default=False, help='Use dummy motor class instead of controlling a real motor')
 def _ride(*args, **kwargs):
@@ -61,7 +62,7 @@ def ride(
     kick_rotations: float = DEFAULT_KICK_ROTS,
     return_speed: float = DEFAULT_RETURN_SPEED,
     return_rotations: float = DEFAULT_RETURN_ROTS,
-    sound: bool = DEFAULT_SOUND,
+    sound: bool = DEFAULT_SOUND_ON,
     port: str = DEFAULT_PORT,
     dummy: bool = False,
 ):
