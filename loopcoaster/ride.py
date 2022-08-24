@@ -15,16 +15,26 @@ from motor import get_motor
 LOOP_WAV = 'roller-loop.mp3'
 SCREAMS_WAV = 'roller-screams.mp3'
 
+# original chain length was 255 -> requires 63.75 rotations
+# if the chain gets shorter, the number of required rotations must be changed accordingly
+DEFAULT_CHAIN_LENGTH = 255
+CHAIN_PIECES_REMOVED = 2
+CHAIN_LENGTH = DEFAULT_CHAIN_LENGTH - CHAIN_PIECES_REMOVED
+FULL_CYCLE_ROTS = CHAIN_LENGTH * 0.25
+
+DEFAULT_RAISE_ROTS = 28.0
+DEFAULT_KICK_ROTS = 10.0
+DEFAULT_RETURN_ROTS = FULL_CYCLE_ROTS - DEFAULT_RAISE_ROTS - DEFAULT_KICK_ROTS
+
+DEFAULT_RAISE_SPEED = 50.0
+DEFAULT_KICK_SPEED = 100.0
+DEFAULT_RETURN_SPEED = 80.0
+
 DEFAULT_REPEATS = 1
 DEFAULT_WAIT_SECONDS = 0.0
-DEFAULT_RAISE_SPEED = 10.0
-DEFAULT_RAISE_ROTS = 28.0
-DEFAULT_KICK_SPEED = 100.0
-DEFAULT_KICK_ROTS = 10.0
-DEFAULT_RETURN_SPEED = 80.0
-DEFAULT_RETURN_ROTS = 25.5
 DEFAULT_SOUND = True
 DEFAULT_PORT = 'A'
+
 
 @click.command()
 @click.option('--repeats', '-n', type=int, default=DEFAULT_REPEATS, help='Number of consecutive rides')
