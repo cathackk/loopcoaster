@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+
 import sys
 from datetime import datetime
 
 import click
-import pyfiglet
+from pyfiglet import figlet_format, FontNotFound
 import requests
 import time
 
@@ -17,7 +18,17 @@ from ride import ride
 @click.option('--password', '-p', type=str)
 @click.option('--wait-seconds', '-t', type=float, default=5.0)
 @click.option('--buffer-size', '-b', type=int, default=1)
-def listen(receive_url: str, user: str, password: str, wait_seconds: float, buffer_size: int):
+@click.option('--banner-font', '-f', type=str, default='doh')
+@click.option('--banner-width', type=int, default=100)
+def listen(
+    receive_url: str,
+    user: str,
+    password: str,
+    wait_seconds: float,
+    buffer_size: int,
+    banner_font: str,
+    banner_width: int,
+):
     waiting_since = datetime.now()
 
     while True:
@@ -50,7 +61,7 @@ def listen(receive_url: str, user: str, password: str, wait_seconds: float, buff
                 ts = datetime.fromtimestamp(obj['ts'])
                 log(f'- [{index}/{len(received)}] {sender}@{ts:%Y-%m-%dT%H:%M:%S}: {message}')
 
-                log(pyfiglet.figlet_format(sender, font="doh", width=100))
+                log(banner(sender, banner_font, banner_width))
 
                 command = message.pop('command')
 
@@ -73,9 +84,21 @@ def listen(receive_url: str, user: str, password: str, wait_seconds: float, buff
             time.sleep(wait_seconds)
 
 
+def banner(text: str, font: str, width: int) -> str:
+    if not font or font in ('none', 'off'):
+        return ''
+
+    try:
+        return figlet_format(text, font=font, width=width)
+    except FontNotFound:
+        log(f'font {font!r} not found')
+        return ''
+
+
 # TODO: proper logging with logger
-def log(*args, **kwargs):
-    print(*args, **kwargs, file=sys.stderr)
+def log(message, *args, **kwargs):
+    if message:
+        print(message, *args, **kwargs, file=sys.stderr)
 
 
 if __name__ == '__main__':
