@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 
 import click
+import pyfiglet
 import requests
 import time
 
@@ -48,6 +49,8 @@ def listen(receive_url: str, user: str, password: str, wait_seconds: float, buff
                 sender = obj['sender']
                 ts = datetime.fromtimestamp(obj['ts'])
                 log(f'- [{index}/{len(received)}] {sender}@{ts:%Y-%m-%dT%H:%M:%S}: {message}')
+
+                log(pyfiglet.figlet_format(sender, font="doh", width=100))
 
                 command = message.pop('command')
 
