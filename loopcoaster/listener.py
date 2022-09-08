@@ -7,6 +7,7 @@ from typing import Optional
 import click
 from pyfiglet import figlet_format, FontNotFound
 import requests
+import requests.adapters
 import time
 
 from move import move
@@ -32,12 +33,24 @@ def listen(
     banner_width: int,
     dummy: Optional[bool],
 ):
+    session = requests.Session()
+    session.mount(
+        prefix='http://',
+        adapter=requests.adapters.HTTPAdapter(
+            max_retries=requests.adapters.Retry(
+                total=5,
+                backoff_factor=1,
+                status_forcelist=[500, 502, 503, 504]
+            )
+        )
+    )
+
     waiting_since = datetime.now()
 
     while True:
         now = datetime.now()
 
-        response = requests.post(
+        response = session.post(
             url=receive_url,
             auth=(user, password),
             headers={'Content-Type': 'application/json'},
