@@ -2,6 +2,7 @@
 
 import sys
 from datetime import datetime
+from typing import Optional
 
 import click
 from pyfiglet import figlet_format, FontNotFound
@@ -20,6 +21,7 @@ from ride import ride
 @click.option('--buffer-size', '-b', type=int, default=1)
 @click.option('--banner-font', '-f', type=str, default='doh')
 @click.option('--banner-width', type=int, default=100)
+@click.option('--dummy/--no-dummy', type=bool, default=None)
 def listen(
     receive_url: str,
     user: str,
@@ -28,6 +30,7 @@ def listen(
     buffer_size: int,
     banner_font: str,
     banner_width: int,
+    dummy: Optional[bool],
 ):
     waiting_since = datetime.now()
 
@@ -64,6 +67,8 @@ def listen(
                 log(banner(sender, banner_font, banner_width))
 
                 command = message.pop('command')
+                if dummy is not None:
+                    message['dummy'] = dummy
 
                 try:
                     if command == 'move':
