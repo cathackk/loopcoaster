@@ -16,7 +16,7 @@ class DummyMotor:
 
     def run_for_rotations(self, rotations: float, speed: float) -> None:
         self._log(f"running rotations={rotations}, speed={speed}")
-        time.sleep(rotations / speed * 10)
+        time.sleep(abs(rotations) / speed * 10)
 
     def stop(self) -> None:
         self._log("stopped")
