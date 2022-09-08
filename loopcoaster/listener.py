@@ -2,10 +2,12 @@
 
 import sys
 from datetime import datetime
+from typing import Optional
 
 import click
 from pyfiglet import figlet_format, FontNotFound
 import requests
+import requests.adapters
 import time
 
 from move import move
@@ -20,6 +22,7 @@ from ride import ride
 @click.option('--buffer-size', '-b', type=int, default=1)
 @click.option('--banner-font', '-f', type=str, default='doh')
 @click.option('--banner-width', type=int, default=100)
+@click.option('--dummy/--no-dummy', type=bool, default=None)
 def listen(
     receive_url: str,
     user: str,
@@ -28,13 +31,26 @@ def listen(
     buffer_size: int,
     banner_font: str,
     banner_width: int,
+    dummy: Optional[bool],
 ):
+    session = requests.Session()
+    session.mount(
+        prefix='http://',
+        adapter=requests.adapters.HTTPAdapter(
+            max_retries=requests.adapters.Retry(
+                total=5,
+                backoff_factor=1,
+                status_forcelist=[500, 502, 503, 504]
+            )
+        )
+    )
+
     waiting_since = datetime.now()
 
     while True:
         now = datetime.now()
 
-        response = requests.post(
+        response = session.post(
             url=receive_url,
             auth=(user, password),
             headers={'Content-Type': 'application/json'},
@@ -64,6 +80,8 @@ def listen(
                 log(banner(sender, banner_font, banner_width))
 
                 command = message.pop('command')
+                if dummy is not None:
+                    message['dummy'] = dummy
 
                 try:
                     if command == 'move':

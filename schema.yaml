@@ -1,0 +1,85 @@
+$id: https://neasi.io/loopcoaster.json
+$schema: https://json-schema.org/draft/2020-12/schema
+
+description: loopcoaster commands
+
+type: object
+properties:
+  command:
+    enum:
+      - move
+      - ride
+  rotations:
+    type: number
+  speed:
+    type: number
+    minimum: -100
+    maximum: 100
+  repeats:
+    type: integer
+    minimum: 1
+  wait_seconds:
+    type: number
+    minimum: 0
+  raise_speed:
+    type: number
+    exclusiveMinimum: 0
+    maximum: 100
+  raise_rotations:
+    type: number
+    minimum: 0
+  kick_speed:
+    type: number
+    exclusiveMinimum: 0
+    maximum: 100
+  kick_rotations:
+    type: number
+    minimum: 0
+  return_speed:
+    type: number
+    exclusiveMinimum: 0
+    maximum: 100
+  return_rotations:
+    type: number
+    minimum: 0
+  sound:
+    type: boolean
+  plimit:
+    type: number
+    exclusiveMinimum: 0
+    maximum: 100
+  port:
+    enum: [A, B, C, D]
+  dummy:
+    type: boolean
+required:
+  - command
+additionalProperties: false
+allOf:
+  - if:
+      properties:
+        command:
+          const: move
+    then:
+      required:
+        - command
+        - rotations
+      not:
+        required:
+          - repeats
+          - wait_seconds
+          - raise_speed
+          - raise_rotations
+          - kick_speed
+          - kick_rotations
+          - return_speed
+          - return_rotations
+  - if:
+      properties:
+        command:
+          const: ride
+    then:
+      not:
+        required:
+          - speed
+          - rotations
