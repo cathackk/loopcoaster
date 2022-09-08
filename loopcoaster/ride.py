@@ -15,7 +15,7 @@ from motor import get_motor
 # original chain length was 255 -> requires 63.75 rotations
 # if the chain gets shorter, the number of required rotations must be changed accordingly
 DEFAULT_CHAIN_LENGTH = 255
-CHAIN_PIECES_REMOVED = 4
+CHAIN_PIECES_REMOVED = int(os.environ.get('LOOPCOASTER_CHAIN_PIECES_REMOVED', '0'))
 CHAIN_LENGTH = DEFAULT_CHAIN_LENGTH - CHAIN_PIECES_REMOVED
 FULL_CYCLE_ROTS = CHAIN_LENGTH * 0.25
 
